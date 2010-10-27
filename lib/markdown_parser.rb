@@ -83,6 +83,7 @@ class MarkdownParser
       end 
 
     end
+    document_structure << paragraph unless paragraph.content == ''
     document_structure.each { |l| yield l }
   end
 
