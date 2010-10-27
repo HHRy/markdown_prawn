@@ -6,8 +6,6 @@
 class MarkdownParser
 
   def initialize(path_to_file)
-    puts path_to_file.inspect
-    puts IO.read(path_to_file).inspect
     # Convert tabs to spaces, make every line use \n 
     #
     @content = detab(IO.read(path_to_file).gsub(/\r\n?/, "\n")).split("\n")
@@ -26,6 +24,29 @@ class MarkdownParser
           paragraph = Prawn::Markdown::Paragraph.new([])
         end
       end
+
+      # Deal with Level 1 Headings
+      #
+      if !/^(=)+$/.match(line).nil?
+        paragraph.content = paragraph.content.delete_if do |item|
+          item == line || item == @content[index - 1]
+        end
+        heading = Prawn::Markdown::Heading.new([@content[index - 1]])
+        heading.level = 1
+        document_structure << heading
+      end
+
+      # Deal with Level 2 Headings
+      #
+      if !/^(-)+$/.match(line).nil?
+        paragraph.content = paragraph.content.delete_if do |item|
+          item == line || item == @content[index - 1]
+        end
+        heading = Prawn::Markdown::Heading.new([@content[index - 1]])
+        heading.level = 2
+        document_structure << heading
+      end
+
     end
     document_structure.each { |l| yield l }
   end
@@ -60,6 +81,7 @@ module Prawn
     class Paragraph < Component
     end
     class Heading < Component
+      attr_accessor :level
     end
   end
 end
