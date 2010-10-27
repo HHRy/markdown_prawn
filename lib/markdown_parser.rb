@@ -3,6 +3,12 @@
 # and is only here so I don't need to write a markdown parser
 # from scratch entirely.
 #
+
+require File.dirname(__FILE__) + '/markdown_fragments/markdown_fragment.rb'
+require File.dirname(__FILE__) + '/markdown_fragments/paragraph_fragment.rb'
+require File.dirname(__FILE__) + '/markdown_fragments/heading_fragment.rb'
+
+
 class MarkdownParser
 
   def initialize(path_to_file)
@@ -13,7 +19,7 @@ class MarkdownParser
 
   def each(&block)
     document_structure = []
-    paragraph = Prawn::Markdown::Paragraph.new([])
+    paragraph = ParagraphFragment.new
 
     @content.each_with_index do |line, index|
       line = process_inline_formatting(line)
@@ -21,7 +27,7 @@ class MarkdownParser
       if line == ""
         unless paragraph.content.empty?
           document_structure << paragraph
-          paragraph = Prawn::Markdown::Paragraph.new([])
+          paragraph = ParagraphFragment.new
         end
       end
 
@@ -31,7 +37,7 @@ class MarkdownParser
         paragraph.content = paragraph.content.delete_if do |item|
           item == line || item == @content[index - 1]
         end
-        heading = Prawn::Markdown::Heading.new([@content[index - 1]])
+        heading = HeadingFragment.new([@content[index - 1]])
         heading.level = 1
         document_structure << heading
       end
@@ -42,7 +48,7 @@ class MarkdownParser
         paragraph.content = paragraph.content.delete_if do |item|
           item == line || item == @content[index - 1]
         end
-        heading = Prawn::Markdown::Heading.new([@content[index - 1]])
+        heading = HeadingFragment.new([@content[index - 1]])
         heading.level = 2
         document_structure << heading
       end
@@ -61,27 +67,16 @@ class MarkdownParser
     }.join("\n")
   end
 
-
+  # Only do Inline formatting for versions of Prawn which support it.
+  #
   def process_inline_formatting(str)
     breg = [ %r{ \b(\_\_) (\S|\S.*?\S) \1\b }x, %r{ (\*\*) (\S|\S.*?\S) \1 }x ]
     ireg = [ %r{ (\*) (\S|\S.*?\S) \1 }x, %r{ \b(_) (\S|\S.*?\S) \1\b }x ]
-    str.gsub(breg[0], %{<b>\\2</b>} ).gsub(breg[1], %{<b>\\2</b>} ).gsub(ireg[0], %{<i>\\2</i>} ).gsub(ireg[1], %{<i>\\2</i>} )
-  end
-
-end
-
-module Prawn
-  module Markdown
-    class Component
-      attr_accessor :content
-      def initialize(content)
-        @content = content
-      end
-    end
-    class Paragraph < Component
-    end
-    class Heading < Component
-      attr_accessor :level
+    if Prawn::VERSION =~ /^0.1/ || Prawn::VERSION =~ /^1/
+      str.gsub(breg[0], %{<b>\\2</b>} ).gsub(breg[1], %{<b>\\2</b>} ).gsub(ireg[0], %{<i>\\2</i>} ).gsub(ireg[1], %{<i>\\2</i>} )
+    else
+      str.gsub(breg[0], %{\\2} ).gsub(breg[1], %{\\2} ).gsub(ireg[0], %{\\2} ).gsub(ireg[1], %{\\2} )
     end
   end
+
 end
