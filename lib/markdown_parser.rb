@@ -10,15 +10,22 @@ class MarkdownParser
     puts IO.read(path_to_file).inspect
     # Convert tabs to spaces, make every line use \n 
     #
-    @content = detab(IO.read(path_to_file).gsub(/\r\n?/, "\n"))
+    @content = detab(IO.read(path_to_file).gsub(/\r\n?/, "\n")).split("\n")
   end
 
   def each(&block)
     document_structure = []
-    previous_line = ''
-    @content.each_line do |line|
+    paragraph = Prawn::Markdown::Paragraph.new([])
+
+    @content.each_with_index do |line, index|
       line = process_inline_formatting(line)
-      previous_line = line
+      paragraph.content << line
+      if line == ""
+        unless paragraph.content.empty?
+          document_structure << paragraph
+          paragraph = Prawn::Markdown::Paragraph.new([])
+        end
+      end
     end
     document_structure.each { |l| yield l }
   end
@@ -46,6 +53,9 @@ module Prawn
   module Markdown
     class Component
       attr_accessor :content
+      def initialize(content)
+        @content = content
+      end
     end
     class Paragraph < Component
     end
