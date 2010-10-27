@@ -1,15 +1,12 @@
-# Don't rely on this for any serious MarkDown parsing, it's
-# based on the very dead original BlueCloth parser by mislav
-# and is only here so I don't need to write a markdown parser
-# from scratch entirely.
-#
-
 require File.dirname(__FILE__) + '/markdown_fragments/markdown_fragment.rb'
 require File.dirname(__FILE__) + '/markdown_fragments/paragraph_fragment.rb'
 require File.dirname(__FILE__) + '/markdown_fragments/heading_fragment.rb'
 require File.dirname(__FILE__) + '/markdown_fragments/list_fragment.rb'
 
-
+# Horribly bodgy and wrong markdown parser which should just about do
+# for a proof of concept. Some of the code comes from mislav's original
+# BlueCloth since I cant find the source of a newer versoin.
+#
 class MarkdownParser
 
   def initialize(path_to_file)
@@ -36,7 +33,17 @@ class MarkdownParser
           paragraph = ParagraphFragment.new
         end
       end
-
+      
+      # Deal with inline headings
+      #
+      unless /^(#+)(\s?)\S/.match(line).nil?
+        paragraph.content = paragraph.content.delete_if { |i| i == line }
+        hashes = $1.dup
+        heading = HeadingFragment.new([line.gsub(hashes,'')])
+        heading.level = hashes.length
+        document_structure << heading
+      end
+      
       # Deal with Level 1 Headings
       #
       if !/^(=)+$/.match(line).nil?
