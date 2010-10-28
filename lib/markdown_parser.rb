@@ -77,7 +77,7 @@ class MarkdownParser
       # Deal with all other kinds of horizontal rules
       #
       if !/^(\*+)(\s)?(\*+)(\s)?(\*+)/.match(line).nil? || !/^(-+)(\s)(-+)(\s)(-+)/.match(line).nil?
-        if !document_structure[-1].is_a?(HeadingFragment)
+        if @content[index - 1].strip == ''
           paragraph.content = paragraph.content.delete_if { |i| i == line }
           document_structure << HorizontalRuleFragment.new
         end
