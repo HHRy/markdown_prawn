@@ -21,6 +21,7 @@ class MarkdownParser
     list = ListFragment.new
     in_list = false
     @content.each_with_index do |line, index|
+      line.strip!
       line = process_inline_formatting(line)
   
       # Assume everything is part of a paragraph by default and
