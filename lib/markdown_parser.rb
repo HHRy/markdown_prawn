@@ -19,7 +19,7 @@ class MarkdownParser
     document_structure = []
     paragraph = ParagraphFragment.new
     list = ListFragment.new
-    
+    in_list = false
     @content.each_with_index do |line, index|
       line = process_inline_formatting(line)
   
@@ -65,29 +65,66 @@ class MarkdownParser
         heading.level = 2
         document_structure << heading
       end
-      
-      # Deal with Lists - This is probably horribly brittle.
+
+      # Try to deal with lists.
       #
-      if !/^\s+\*\s/.match(line).nil? || !/^\s+\d+\.\s/.match(line).nil?
+      if in_list
+        # We're in a list just now.
+        #
+
+        # Remove the content from the paragraph where it will have
+        # automatically been appended
+        #
         paragraph.content = paragraph.content.delete_if { |i| i == line }
-        if list.ordered? && !/^\s+\*\s/.match(line).nil?
-          document_structure << list
-          list = ListFragment.new([line.gsub(/^\s+\*\s/,'')])
-       elsif !list.ordered? && !/^\s+\d+\.\s/.match(line).nil?
-         document_structure << list
-         list = ListFragment.new([line.gsub(/^\s+\d+\.\s/,'')])
-         list.ordered = true
-       else
-         list.content << line.gsub(/^\s+\d+\.\s/,'') if !/^\s+\d+\.\s/.match(line).nil?
-         list.ordered = true if !/^\s+\d+\.\s/.match(line).nil?
-         list.content << line.gsub(/^\s+\*\s/,'') if !/^\s+\*\s/.match(line).nil?
-       end
-      elsif /^\s+\*\s/.match(line).nil? && /^\s+\d+\.\s/.match(line).nil?
-        if !list.content.empty?
-           document_structure << list
-           list = ListFragment.new
+
+        # Check to see if we've got a new list item.
+        #
+        if (!/^\s+\*\s/.match(line).nil? || !/^\s+\d+\.\s/.match(line).nil?)
+
+          # Find out if this new list item is for a different type of list 
+          # and deal with that before adding the new list item.
+          #
+          if list.ordered? && !/^\s+\*\s/.match(line).nil?
+            document_structure << list
+            list = ListFragment.new
+         elsif !list.ordered? && !/^\s+\d+\.\s/.match(line).nil?
+            document_structure << list
+            list = ListFragment.new
+            list.ordered = true
          end
-      end 
+
+          # Remove the list style and add the new list item.
+          #
+          list.content << line.sub(/^\s+\*\s/,'').sub(/^\s+\d+\.\s/,'')
+
+        else
+          # If this line isn't a new list item, then it's a continuation for the current
+          # list item.
+          #
+          list.content[-1] += line
+        end
+
+        # If the current line is empty, then we're done with the list.
+        #
+        if line == '' 
+          document_structure << list
+          list = ListFragment.new
+          in_list = false
+        end
+      else
+        # Not currently in a list, but we've detected a list item
+        #
+        if (!/^\s+\*\s/.match(line).nil? || !/^\s+\d+\.\s/.match(line).nil?)
+          ordered = false
+          ordered = true if !/^\s+\d+\.\s/.match(line).nil?
+          list = ListFragment.new
+          list.ordered = ordered
+          list.content << line.sub(/^\s+\*\s/,'').sub(/^\s+\d+\.\s/,'')
+          paragraph.content = paragraph.content.delete_if { |i| i == line }
+          in_list = true
+        end
+      end
+
 
     end
     document_structure << paragraph unless paragraph.content == ''
