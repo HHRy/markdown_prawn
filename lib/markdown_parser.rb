@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/markdown_fragments/markdown_fragment.rb'
 require File.dirname(__FILE__) + '/markdown_fragments/paragraph_fragment.rb'
 require File.dirname(__FILE__) + '/markdown_fragments/heading_fragment.rb'
 require File.dirname(__FILE__) + '/markdown_fragments/list_fragment.rb'
+require File.dirname(__FILE__) + '/markdown_fragments/horizontal_rule_fragment.rb'
 
 # Horribly bodgy and wrong markdown parser which should just about do
 # for a proof of concept. Some of the code comes from mislav's original
@@ -21,9 +22,8 @@ class MarkdownParser
     list = ListFragment.new
     in_list = false
     @content.each_with_index do |line, index|
-      line.strip!
       line = process_inline_formatting(line)
-  
+ 
       # Assume everything is part of a paragraph by default and
       # add its content to the current in-scope paragraph object.
       #
@@ -56,15 +56,31 @@ class MarkdownParser
         document_structure << heading
       end
 
-      # Deal with Level 2 Headings
+      # Deal with Level 2 Headings or horizontal rules.
       #
       if !/^(-)+$/.match(line).nil?
-        paragraph.content = paragraph.content.delete_if do |item|
-          item == line || item == @content[index - 1]
+        if @content[index - 1].strip == ''
+          # Assume it's a horizontal rule
+          #
+          paragraph.content = paragraph.content.delete_if { |i| i == line }
+          document_structure << HorizontalRuleFragment.new
+        else
+          paragraph.content = paragraph.content.delete_if do |item|
+            item == line || item == @content[index - 1]
+          end
+          heading = HeadingFragment.new([@content[index - 1]])
+          heading.level = 2
+          document_structure << heading
         end
-        heading = HeadingFragment.new([@content[index - 1]])
-        heading.level = 2
-        document_structure << heading
+      end
+
+      # Deal with all other kinds of horizontal rules
+      #
+      if !/^(\*+)(\s)?(\*+)(\s)?(\*+)/.match(line).nil? || !/^(-+)(\s)(-+)(\s)(-+)/.match(line).nil?
+        if !document_structure[-1].is_a?(HeadingFragment)
+          paragraph.content = paragraph.content.delete_if { |i| i == line }
+          document_structure << HorizontalRuleFragment.new
+        end
       end
 
       # Try to deal with lists.

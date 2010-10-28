@@ -19,6 +19,10 @@ And of course:
   2. List
   3. Support
 
+- - - - 
+
 Ryan Stenhouse, October 27th 2010
+
+*******
 
 [1]: http://prawn.majesticseacreature.com
