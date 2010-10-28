@@ -3,7 +3,7 @@ Testing Markdown to PDF Conversion
 
 The goal of this proof **of** concept is to take some fairly standard
 markdown *and* generate a correctly formatted ***PDF*** document using
-the wonderful Prawn library.
+the wonderful [Prawn][1] library.
 
 This includes:
 --------------
@@ -12,7 +12,7 @@ This includes:
   * List
   * Support
 
-And of coure:
+And of course:
 -------------
 
   1. Ordered
@@ -20,3 +20,5 @@ And of coure:
   3. Support
 
 Ryan Stenhouse, October 27th 2010
+
+[1]: http://prawn.majesticseacreature.com
