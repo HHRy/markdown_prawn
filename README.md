@@ -10,6 +10,7 @@ but it will correctly render:
   * Headings
   * Lists (Both kinds)
   * Paragraphs
+  * Horizontal Rules
   * Inline text formatting (if using Prawn > 0.10)
 
 The markdown parser I've built is rather hacky and very

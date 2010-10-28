@@ -21,7 +21,6 @@ Markdown Support
   * Support lists which contain many paragraphs
   * Support lists which contain block quotes
   * Support lists which contain code blocks
-  * Support horizontal rules
   * Support inline code fragments using backticks
 
 Code Related Stuff
