@@ -12,6 +12,7 @@ but it will correctly render:
   * Paragraphs
   * Horizontal Rules
   * Inline text formatting (if using Prawn > 0.10)
+  * Link reference lists
 
 The markdown parser I've built is rather hacky and very
 slow; so any improvements that can be made there would
