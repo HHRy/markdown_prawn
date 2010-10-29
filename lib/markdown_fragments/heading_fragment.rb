@@ -3,7 +3,7 @@ class HeadingFragment < MarkdownFragment
   
     def render_on(pdf_object, options = {})
       arguments = _default_render_options.merge(options)
-      pdf_object.move_down(@level + 1)
+      pdf_object.move_down(@level * 2)
       pdf_object.text @content.join(' '), arguments
       pdf_object.move_down(@level * 2)
     end

@@ -3,6 +3,7 @@ require File.dirname(__FILE__) + '/markdown_fragments/paragraph_fragment.rb'
 require File.dirname(__FILE__) + '/markdown_fragments/heading_fragment.rb'
 require File.dirname(__FILE__) + '/markdown_fragments/list_fragment.rb'
 require File.dirname(__FILE__) + '/markdown_fragments/horizontal_rule_fragment.rb'
+require File.dirname(__FILE__) + '/markdown_fragments/links_reference_fragment.rb'
 
 # Horribly bodgy and wrong markdown parser which should just about do
 # for a proof of concept. Some of the code comes from mislav's original
@@ -20,6 +21,7 @@ class MarkdownParser
     document_structure = []
     paragraph = ParagraphFragment.new
     list = ListFragment.new
+    links = LinksReferenceFragment.new
     in_list = false
     @content.each_with_index do |line, index|
       line = process_inline_formatting(line)
@@ -142,9 +144,17 @@ class MarkdownParser
         end
       end
 
+      # Deal with a link reference by adding it ot the list of references
+      #
+      if !/^(\[\S+\]){1}:\s(\S+)\s?(.+)?/.match(line).nil?
+        reference, url, title = $1, $2, $3
+        paragraph.content = paragraph.content.delete_if { |i| i == line }
+        links.content << [ reference, url, "#{title}" ]
+      end
 
     end
     document_structure << paragraph unless paragraph.content == ''
+    document_structure << links if !links.content.empty?
     document_structure.each { |l| yield l }
   end
 
