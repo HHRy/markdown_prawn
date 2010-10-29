@@ -11,7 +11,7 @@ but it will correctly render:
   * Lists (Both kinds)
   * Paragraphs
   * Horizontal Rules
-  * Inline text formatting (if using Prawn > 0.10)
+  * Inline text formatting 
   * Link reference lists
 
 The markdown parser I've built is rather hacky and very
@@ -59,6 +59,5 @@ Usage:
 Requirements:
 -------------
 
-  * Prawn (0.8 and upwards)
-
+  * Prawn, tested against Prawn 0.11.1
 
