@@ -161,6 +161,7 @@ class Parser
         end
       end
 
+
       # Deal with a link reference by adding it ot the list of references
       #
       if !/^(\[\S+\]){1}:\s(\S+)\s?(.+)?/.match(line).nil?
@@ -176,6 +177,10 @@ class Parser
         line.gsub(val[0],'')
         @document_structure << ImageFragment.new([val[1]])
       end
+    end
+    if !list.content.empty? && ! @document_structure.include?(list)
+      @document_structure << list
+      list = ListFragment.new
     end
     @document_structure << paragraph unless paragraph.content == ''
     @document_structure << @links_list[:object] if !@links_list[:urls_seen].empty?

@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/test_helper.rb'
+require File.dirname(__FILE__) + '/helper.rb'
 
 class TestListsHandling < Test::Unit::TestCase
 
   def setup
-    @unordered = MarkdownPrawn::FileParser.new('fixtures/unordered_lists.mdown')
-    @ordered = MarkdownPrawn::FileParser.new('fixtures/ordered_lists.mdown')
+    @unordered = MarkdownPrawn::FileParser.new(File.expand_path(File.dirname(__FILE__) + '/fixtures/unordered_lists.mdown'))
+    @ordered = MarkdownPrawn::FileParser.new(File.expand_path(File.dirname(__FILE__) + '/fixtures/ordered_lists.mdown'))
   end
 
   def test_document_structure_is_correct_for_unordered_lists
