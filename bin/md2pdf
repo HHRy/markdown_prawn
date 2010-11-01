@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+#
+# Markdown to PDF by Ryan Stenhouse <ryan@ryanstenhouse.eu>
+# November 1st 2010
+#
+# Takes input from standard in, expected to be a markdown document
+# and renders a PDF to standard out.
+#
+root =  File.expand_path(File.dirname(__FILE__)+ '/../')
+load root + '/markdown_prawn.rb'
+content = $stdin.read
+puts MarkdownPrawn::StringParser.new(content).to_pdf.render
