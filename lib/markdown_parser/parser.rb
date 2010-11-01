@@ -174,7 +174,7 @@ class Parser
       # Deal with inline images
       #
       line.scan(/(?:^|\s)?(\!\[(?:.+?)\]\((.+?)\))/) do |val|
-        line.gsub(val[0],'')
+        paragraph.content[-1] = paragraph.content[-1].gsub(val[0],'')
         @document_structure << ImageFragment.new([val[1]])
       end
     end
