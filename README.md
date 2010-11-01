@@ -13,6 +13,9 @@ but it will correctly render:
   * Horizontal Rules
   * Inline text formatting 
   * Link reference lists
+  * Inline Links
+  * Inline Images
+  * Reference Images
 
 The markdown parser I've built is rather hacky and very
 slow; so any improvements that can be made there would
@@ -54,10 +57,10 @@ Also, I can't afford a PrinceXML licence.
 Usage:
 ------
 
-       $ ruby markdown_prawn.rb ./test.md 
+       $ cat ./test.md | ./bin/md2pdf > output.pdf
 
 Requirements:
 -------------
 
-  * Prawn, tested against Prawn 0.11.1
+  * Prawn, tested against Prawn 0.11.1 (gem install prawn --pre)
 
