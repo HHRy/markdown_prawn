@@ -14,7 +14,7 @@ but it will correctly render:
   * Inline text formatting 
   * Link reference lists
   * Inline Links
-  * Inline Images
+  * Inline Images (Local and remote)
   * Reference Images
 
 The markdown parser I've built is rather hacky and very
@@ -26,6 +26,13 @@ BlueCloth library by Mislav.
 Please please test it and let me know what you think and
 make any suggestions for improvements. Patches are very
 welcome.
+
+If you link a remote image in, it'll use net/http to pull
+it down to your OSes tempory folder and then will embed
+the image in the PDF.
+
+Supports all the image formants which Prawn supports.
+
 
 What will never be supported
 ----------------------------
