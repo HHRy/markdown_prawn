@@ -19,6 +19,7 @@ class ListFragment < MarkdownFragment
  
     pdf_object.table data, arguments.merge({:width => width}) do
        cells.borders = []
+       column(0).style( { :width => 20  })
     end
     pdf_object.move_down(5) 
   end
