@@ -33,6 +33,12 @@ the image in the PDF.
 
 Supports all the image formants which Prawn supports.
 
+Image Geometry Credits
+----------------------
+
+Image geometry for determining the width and height of
+JPEG / PNG images is from [This DZone Snippet][1].
+
 
 What will never be supported
 ----------------------------
@@ -71,3 +77,4 @@ Requirements:
 
   * Prawn, tested against Prawn 0.11.1 (gem install prawn --pre)
 
+[1]: http://snippets.dzone.com/posts/show/805
