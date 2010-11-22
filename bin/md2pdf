@@ -6,6 +6,6 @@
 # Takes input from standard in, expected to be a markdown document
 # and renders a PDF to standard out.
 #
-require 'markdown_prawn'
+require File.dirname(__FILE__) + '/../markdown_prawn.rb'
 content = $stdin.read
 puts MarkdownPrawn::StringParser.new(content).to_pdf.render

@@ -23,7 +23,7 @@ class Parser
   #
   def to_pdf(options = {})
     parse!
-    options = options.merge({ :page_layout =>  :portrait, :page_size => 'A4' })
+    options = { :page_layout =>  :portrait, :page_size => 'A4' }.merge(options)
     pdf = Prawn::Document.new(options)
     @document_structure.each { |markdown_fragment| markdown_fragment.render_on(pdf) }
     pdf
@@ -170,13 +170,32 @@ class Parser
         @links_list[:urls_seen] << url 
         @links_list[:object].content <<  [ reference, url, "#{title}" ]
       end
+     
+      to_replace = []
 
       # Deal with inline images
       #
       line.scan(/(?:^|\s)?(\!\[(?:.+?)\]\((.+?)\))/) do |val|
         paragraph.content[-1] = paragraph.content[-1].gsub(val[0],'')
+        to_replace << val[0]
         @document_structure << ImageFragment.new([val[1]])
       end
+
+      to_replace.each { |v| line.gsub!(v) }
+      to_replace = []
+
+      # Deal with inline hyperlinks, which are similar to
+      # images.
+      #
+      line.scan(/(?:^|\s)?(\[(?:.+?)\]\((.+?)\))/) do |val|
+        if @links_list[:urls_seen].include?(val[1])
+        else
+          @links_list[:urls_seen] << val[1]
+          @links_list[:object].content <<  [ '12', val[1], "#{title}" ]
+        end
+        paragraph.content[-1] = paragraph.content[-1].gsub(val[0],'[Link][12]')
+      end
+      
     end
     if !list.content.empty? && ! @document_structure.include?(list)
       @document_structure << list

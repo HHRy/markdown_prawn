@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.version = '0.0.4.pre'
   spec.platform = Gem::Platform::RUBY
   spec.files =  Dir.glob("{bin,lib,test}/**/**/*") +
-                      ["Rakefile", "markdown_prawn.gemspec"]
+                      ["Rakefile", "markdown_prawn.gemspec",'markdown_prawn.rb']
   spec.require_path = "lib"
   spec.required_ruby_version = '>= 1.8.7'
   spec.required_rubygems_version = ">= 1.3.6"
